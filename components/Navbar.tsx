@@ -20,9 +20,9 @@ function Navbar() {
 }
 
 const items = [
-  { label: "Dashboard", link: "/" },
-  { label: "Transactions", link: "/transactions" },
-  { label: "Manage", link: "/manage" },
+  { label: "Painel de Controle", link: "/" },
+  { label: "Transações", link: "/transactions" },
+  { label: "Gerenciar", link: "/manage" },
 ];
 
 function MobileNavBar() {
@@ -51,19 +51,21 @@ function MobileNavBar() {
                   key={item.label}
                   label={item.label}
                   link={item.link}
-                  clickCallback={() => setIsOpen(prev => !prev)}
+                  clickCallback={() => setIsOpen((prev) => !prev)}
                 />
               ))}
             </div>
           </SheetContent>
         </Sheet>
-        <div className="flex h-[80px] min-h-[60px]
-        item-center gap-x-4">
-            <LogoMobile />
+        <div
+          className="flex h-[80px] min-h-[60px]
+        item-center gap-x-4"
+        >
+          <LogoMobile />
         </div>
         <div className="flex items-center gap-2">
-            <ThemeSwitcherBtn />
-            <UserButton afterSignOutUrl="/sign-in" />
+          <ThemeSwitcherBtn />
+          <UserButton afterSignOutUrl="/sign-in" />
         </div>
       </nav>
     </div>
@@ -101,7 +103,15 @@ function DesktopNavbar() {
   );
 }
 
-function NavbarItem({ link, label, clickCallback }: { link: string; label: string, clickCallback?: () => void }) {
+function NavbarItem({
+  link,
+  label,
+  clickCallback,
+}: {
+  link: string;
+  label: string;
+  clickCallback?: () => void;
+}) {
   const pathname = usePathname();
   const isActive = pathname === link;
 
@@ -115,7 +125,7 @@ function NavbarItem({ link, label, clickCallback }: { link: string; label: strin
           isActive && "text-foreground"
         )}
         onClick={() => {
-            if(clickCallback) clickCallback();
+          if (clickCallback) clickCallback();
         }}
       >
         {label}
