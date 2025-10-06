@@ -6,6 +6,7 @@ export const CreateTransactionSchema = z.object({
   date: z.coerce.date(),
   category: z.string(),
   type: z.union([z.literal("renda"), z.literal("gasto")]),
+  goalId: z.string().optional(),
 });
 
 export type CreateTransactionSchemaType = z.infer<typeof CreateTransactionSchema>;

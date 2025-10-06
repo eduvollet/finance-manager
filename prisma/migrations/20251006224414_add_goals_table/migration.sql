@@ -1,0 +1,11 @@
+-- CreateTable
+CREATE TABLE "Goal" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "userId" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "targetAmount" REAL NOT NULL,
+    "currentAmount" REAL NOT NULL DEFAULT 0,
+    "deadline" DATETIME NOT NULL,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updateAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);

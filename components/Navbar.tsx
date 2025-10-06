@@ -22,6 +22,7 @@ function Navbar() {
 const items = [
   { label: "Painel de Controle", link: "/" },
   { label: "Transações", link: "/transactions" },
+  { label: "Metas", link: "/goals" },
   { label: "Gerenciar", link: "/manage" },
 ];
 

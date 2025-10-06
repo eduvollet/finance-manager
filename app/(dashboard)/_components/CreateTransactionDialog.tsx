@@ -44,6 +44,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { CreateTransaction } from "../_actions/transactions";
 import { toast } from "sonner";
 import { DateToUTC } from "@/lib/helpers";
+import GoalPicker from "./GoalPicker";
 
 interface Props {
   trigger: ReactNode;
@@ -70,6 +71,13 @@ function CreateTransactionDialog({ trigger, type }: Props) {
     [form]
   );
 
+  const handleGoalChange = useCallback(
+    (value: string) => {
+      form.setValue("goalId", value);
+    },
+    [form]
+  );
+
   const queryClient = useQueryClient();
 
   const { mutate, isPending } = useMutation({
@@ -84,10 +92,15 @@ function CreateTransactionDialog({ trigger, type }: Props) {
         amount: 0,
         date: new Date(),
         category: undefined,
+        goalId: undefined,
       });
 
       queryClient.invalidateQueries({
         queryKey: ["overview"],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ["goals"],
       });
 
       setOpen((prev) => !prev);
@@ -178,53 +191,69 @@ function CreateTransactionDialog({ trigger, type }: Props) {
                   </FormItem>
                 )}
               />
-
-              <FormField
-                control={form.control}
-                name="date"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col">
-                    <FormLabel>Data da Transação</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant={"outline"}
-                            className={cn(
-                              "w-[200px] ol-3 text-left front-normal",
-                              !field.value && "text-muted-foreground"
-                            )}
-                          >
-                            {field.value ? (
-                              format(field.value, "PPP")
-                            ) : (
-                              <span>"Selecione uma data"</span>
-                            )}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0">
-                        <Calendar
-                          mode="single"
-                          selected={field.value}
-                          onSelect={(value) => {
-                            if (!value) return;
-                            console.log("@@CALENDAR", value);
-                            field.onChange(value);
-                          }}
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    <FormDescription>
-                      Selecione uma Data- OBRIGATÓRIO
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              {type === "renda" && (
+                <FormField
+                  control={form.control}
+                  name="goalId"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col">
+                      <FormLabel>Meta</FormLabel>
+                      <FormControl>
+                        <GoalPicker onChange={handleGoalChange} />
+                      </FormControl>
+                      <FormDescription>
+                        Selecione uma meta (opcional)
+                      </FormDescription>
+                    </FormItem>
+                  )}
+                />
+              )}
             </div>
+            <FormField
+              control={form.control}
+              name="date"
+              render={({ field }) => (
+                <FormItem className="flex flex-col">
+                  <FormLabel>Data da Transação</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant={"outline"}
+                          className={cn(
+                            "w-[200px] ol-3 text-left front-normal",
+                            !field.value && "text-muted-foreground"
+                          )}
+                        >
+                          {field.value ? (
+                            format(field.value, "PPP")
+                          ) : (
+                            <span>"Selecione uma data"</span>
+                          )}
+                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                      <Calendar
+                        mode="single"
+                        selected={field.value}
+                        onSelect={(value) => {
+                          if (!value) return;
+                          console.log("@@CALENDAR", value);
+                          field.onChange(value);
+                        }}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <FormDescription>
+                    Selecione uma Data- OBRIGATÓRIO
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </form>
         </Form>
         <DialogFooter>

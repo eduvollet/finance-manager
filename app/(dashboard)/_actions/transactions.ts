@@ -20,7 +20,7 @@ export async function CreateTransaction(form: CreateTransactionSchemaType) {
     redirect("/sign-in");
   }
 
-  const { amount, category, date, description, type } = parsedBody.data;
+  const { amount, category, date, description, type, goalId } = parsedBody.data;
 
   const categoryRow = await prisma.category.findFirst({
     where: {
@@ -33,7 +33,7 @@ export async function CreateTransaction(form: CreateTransactionSchemaType) {
     throw new Error("category not found");
   }
 
-  await prisma.$transaction([
+  const transactionLogic = [
     prisma.transaction.create({
       data: {
         userId: user.id,
@@ -43,6 +43,7 @@ export async function CreateTransaction(form: CreateTransactionSchemaType) {
         type,
         category: categoryRow.name,
         categoryIcon: categoryRow.icon,
+        goalId,
       },
     }),
 
@@ -97,5 +98,23 @@ export async function CreateTransaction(form: CreateTransactionSchemaType) {
         },
       },
     }),
-  ]);
+  ];
+
+  if (type === "renda" && goalId) {
+    transactionLogic.push(
+      prisma.goal.update({
+        where: {
+          id: goalId,
+          userId: user.id,
+        },
+        data: {
+          currentAmount: {
+            increment: amount,
+          },
+        },
+      })
+    );
+  }
+
+  await prisma.$transaction(transactionLogic);
 }

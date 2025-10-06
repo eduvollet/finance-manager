@@ -42,6 +42,22 @@ model Transaction{
 
   category String
   categoryIcon String
+
+  goalId String?
+  goal Goal? @relation(fields: [goalId], references: [id], onDelete: SetNull)
+}
+
+model Goal{
+  id String @id @default(uuid())
+  userId String
+  name String
+  targetAmount Float
+  currentAmount Float @default(0)
+  deadline DateTime
+  createdAt DateTime @default(now())
+  updateAt DateTime @updatedAt
+
+  transactions Transaction[]
 }
 
 model MonthHistory{
