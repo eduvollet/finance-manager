@@ -43,7 +43,7 @@ export async function CreateTransaction(form: CreateTransactionSchemaType) {
         type,
         category: categoryRow.name,
         categoryIcon: categoryRow.icon,
-        goalId,
+        goalId: goalId || undefined,
       },
     }),
 

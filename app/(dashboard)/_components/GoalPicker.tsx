@@ -67,27 +67,40 @@ function GoalPicker({ onChange }: Props) {
             <p>Nenhuma meta encontrada</p>
           </CommandEmpty>
           <CommandGroup>
-            <CommandList>
-              {goalsQuery.data &&
-                goalsQuery.data.map((goal) => (
-                  <CommandItem
-                    key={goal.id}
-                    onSelect={() => {
-                      setValue(goal.id);
-                      setOpen((prev) => !prev);
-                    }}
-                  >
-                    <GoalRow goal={goal} />
-                    <Check
-                      className={cn(
-                        "mr-2 w-4 h-4 opacity-0",
-                        value === goal.id && "opacity-100"
-                      )}
-                    />
-                  </CommandItem>
-                ))}
-            </CommandList>
-          </CommandGroup>
+                          <CommandList>
+                          <CommandItem
+                            onSelect={() => {
+                              setValue("");
+                              setOpen((prev) => !prev);
+                            }}
+                          >
+                            Nenhuma
+                            <Check
+                              className={cn(
+                                "mr-2 w-4 h-4 opacity-0",
+                                !value && "opacity-100"
+                              )}
+                            />
+                          </CommandItem>
+                          {goalsQuery.data &&
+                            goalsQuery.data.map((goal) => (
+                              <CommandItem
+                                key={goal.id}
+                                onSelect={() => {
+                                  setValue(goal.id);
+                                  setOpen((prev) => !prev);
+                                }}
+                              >
+                                <GoalRow goal={goal} />
+                                <Check
+                                  className={cn(
+                                    "mr-2 w-4 h-4 opacity-0",
+                                    value === goal.id && "opacity-100"
+                                  )}
+                                />
+                              </CommandItem>
+                            ))}
+                        </CommandList>          </CommandGroup>
         </Command>
       </PopoverContent>
     </Popover>
