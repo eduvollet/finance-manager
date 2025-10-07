@@ -22,7 +22,7 @@ export async function GET(request: Request) {
     });
   }
 
-  const stats = await getBalanceStats(
+  const stats = await getGoalsStats(
     user.id,
     queryParams.data.from,
     queryParams.data.to
@@ -31,19 +31,22 @@ export async function GET(request: Request) {
   return Response.json(stats);
 }
 
-export type GetBalanceStatsResponseType = Awaited<
-  ReturnType<typeof getBalanceStats>
+export type GetGoalsStatsResponseType = Awaited<
+  ReturnType<typeof getGoalsStats>
 >;
 
-async function getBalanceStats(userId: string, from: Date, to: Date) {
-  const totals = await prisma.transaction.groupBy({
-    by: ["type"],
+async function getGoalsStats(userId: string, from: Date, to: Date) {
+  const totals = await prisma.transaction.aggregate({
     where: {
       userId,
       date: {
         gte: from,
         lte: endOfDay(to),
       },
+      goalId: {
+        not: null,
+      },
+      type: "renda",
     },
     _sum: {
       amount: true,
@@ -51,7 +54,6 @@ async function getBalanceStats(userId: string, from: Date, to: Date) {
   });
 
   return {
-    expense: totals.find((t) => t.type === "gasto")?._sum.amount || 0,
-    income: totals.find((t) => t.type === "renda")?._sum.amount || 0,
+    goals: totals._sum.amount || 0,
   };
 }

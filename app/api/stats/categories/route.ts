@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma";
 import { OverviewQuerySchema } from "@/schema/overview";
 import { currentUser } from "@clerk/nextjs/server";
+import { endOfDay } from "date-fns";
 import { redirect } from "next/navigation";
 
 export async function GET(request: Request) {
@@ -31,7 +32,6 @@ export type GetCategoriesStatsResponseType = Awaited<
   ReturnType<typeof getCategoriesStats>
 >;
 
-
 async function getCategoriesStats(userId: string, from: Date, to: Date) {
   const stats = await prisma.transaction.groupBy({
     by: ["type", "category", "categoryIcon"],
@@ -39,7 +39,7 @@ async function getCategoriesStats(userId: string, from: Date, to: Date) {
       userId,
       date: {
         gte: from,
-        lte: to,
+        lte: endOfDay(to),
       },
     },
     _sum: {

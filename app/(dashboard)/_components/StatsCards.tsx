@@ -1,12 +1,13 @@
 "use client";
 
 import { GetBalanceStatsResponseType } from "@/app/api/stats/balance/route";
+import { GetGoalsStatsResponseType } from "@/app/api/stats/goals/route";
 import SkeletonWrapper from "@/components/SkeletonWrapper";
 import { Card } from "@/components/ui/card";
 import { UserSettings } from "@/lib/generated/prisma/client";
 import { DateToUTC, GetFormatterForCurrency } from "@/lib/helpers";
 import { useQuery } from "@tanstack/react-query";
-import { TrendingDown, TrendingUp, Wallet } from "lucide-react";
+import { Target, TrendingDown, TrendingUp, Wallet } from "lucide-react";
 import React, { useCallback, useMemo } from "react";
 import CountUp from "react-countup";
 
@@ -25,12 +26,21 @@ function StatsCards({ from, to, userSettings }: Props) {
       ).then((res) => res.json()),
   });
 
+  const goalsQuery = useQuery<GetGoalsStatsResponseType>({
+    queryKey: ["overview", "goals", from, to],
+    queryFn: () =>
+      fetch(`/api/stats/goals?from=${DateToUTC(from)}&to=${DateToUTC(to)}`).then(
+        (res) => res.json()
+      ),
+  });
+
   const formatter = useMemo(() => {
     return GetFormatterForCurrency(userSettings.currency);
   }, [userSettings.currency]);
 
   const income = statsQuery.data?.income || 0;
   const expense = statsQuery.data?.expense || 0;
+  const goals = goalsQuery.data?.goals || 0;
 
   const balance = income - expense;
 
@@ -59,6 +69,20 @@ function StatsCards({ from, to, userSettings }: Props) {
             <TrendingDown
               className="h-12 w-12 items-center rounded-lg p-2 !text-red-500 
               !bg-red-400/10"
+            />
+          }
+        />
+      </SkeletonWrapper>
+
+      <SkeletonWrapper isLoading={!goalsQuery.data}>
+        <StatsCard
+          formatter={formatter}
+          value={goals}
+          title="Metas"
+          icon={
+            <Target
+              className="h-12 w-12 items-center rounded-lg p-2 !text-yellow-500 
+              !bg-yellow-400/10"
             />
           }
         />
