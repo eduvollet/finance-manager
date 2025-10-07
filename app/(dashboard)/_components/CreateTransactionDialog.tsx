@@ -149,7 +149,7 @@ function CreateTransactionDialog({ trigger, type }: Props) {
                 <FormItem>
                   <FormLabel>Descrição</FormLabel>
                   <FormControl>
-                    <Input defaultValue={""} {...field} />
+                    <Input {...field} />
                   </FormControl>
                   <FormDescription>
                     Descrição da transação - NÃO OBRIGATÓRIO

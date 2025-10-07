@@ -8,6 +8,7 @@ import React, { useState } from "react";
 import { toast } from "sonner";
 import StatsCards from "./StatsCards";
 import CategoriesStats from "./CategoriesStats";
+import GoalsStats from "./GoalsStats";
 
 function Overview({ userSettings }: { userSettings: UserSettings }) {
   const [dateRange, setDateRange] = useState<{ from: Date; to: Date }>({
@@ -16,7 +17,7 @@ function Overview({ userSettings }: { userSettings: UserSettings }) {
   });
   return (
     <>
-      <div className="flex flex-wrap items-end justify-between gap-2 py-6 px-8">
+      <div className="flex flex-wrap items-end justify-between gap-2 p-8">
         <h2 className="text-3xl font-bold">Visão Geral</h2>
         <div className="flex items-center gap-3">
           <DateRangePicker
@@ -46,6 +47,12 @@ function Overview({ userSettings }: { userSettings: UserSettings }) {
       />
 
       <CategoriesStats
+        userSettings={userSettings}
+        from={dateRange.from}
+        to={dateRange.to}
+      />
+
+      <GoalsStats
         userSettings={userSettings}
         from={dateRange.from}
         to={dateRange.to}
