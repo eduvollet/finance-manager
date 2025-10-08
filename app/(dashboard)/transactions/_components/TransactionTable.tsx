@@ -94,18 +94,22 @@ const columns: ColumnDef<TransactionHistoryRow>[] = [
       <DataTableColumnHeader column={column} title="Tipo" />
     ),
     filterFn: (row, id, value) => {
+      if (value.includes("meta")) {
+        return !!row.original.goalId;
+      }
       return value.includes(row.getValue(id));
     },
     cell: ({ row }) => (
       <div
         className={cn(
           "capitalize rounded-lg text-center p-2",
-          row.original.type === "gasto" && "bg-red-400/10 text-red-500 w-20",
-          row.original.type === "renda" &&
+          row.original.goalId && "bg-yellow-400/10 text-yellow-500 w-20",
+          !row.original.goalId && row.original.type === "gasto" && "bg-red-400/10 text-red-500 w-20",
+          !row.original.goalId && row.original.type === "renda" &&
             "bg-emerald-400/10 text-emerald-500 w-20"
         )}
       >
-        {row.original.type}
+        {row.original.goalId ? "Meta" : row.original.type}
       </div>
     ),
   },
@@ -138,7 +142,7 @@ function TransactionTable({ from, to }: Props) {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
-  const history = useQuery<GetTransactionHistoryResponseType>({
+  const history = useQuery<GetTransactionHistoryResponseType>({ 
     queryKey: ["transactions", "history", from, to],
     queryFn: () =>
       fetch(
@@ -196,6 +200,7 @@ function TransactionTable({ from, to }: Props) {
               options={[
                 { label: "Renda", value: "renda" },
                 { label: "Gasto", value: "gasto" },
+                { label: "Meta", value: "meta" },
               ]}
             />
           )}
@@ -211,7 +216,7 @@ function TransactionTable({ from, to }: Props) {
                 category: row.original.category,
                 categoryIcon: row.original.categoryIcon,
                 description: row.original.description,
-                type: row.original.type,
+                type: row.original.goalId ? "Meta" : row.original.type,
                 amount: row.original.amount,
                 formattedAmount: row.original.formattedAmount,
                 date: row.original.date,
