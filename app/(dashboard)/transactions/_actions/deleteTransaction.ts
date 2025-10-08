@@ -2,6 +2,7 @@
 
 import prisma from "@/lib/prisma";
 import { currentUser } from "@clerk/nextjs/server";
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 export async function DeleteTransaction(id: string) {
@@ -20,14 +21,15 @@ export async function DeleteTransaction(id: string) {
     throw new Error("bad request");
   }
 
-  await prisma.$transaction([
-    prisma.transaction.delete({
+  await prisma.$transaction(async (prisma) => {
+    await prisma.transaction.delete({
       where: {
         id,
         userId: user.id,
       },
-    }),
-    prisma.monthHistory.update({
+    });
+
+    await prisma.monthHistory.update({
       where: {
         day_month_year_userId: {
           userId: user.id,
@@ -48,8 +50,9 @@ export async function DeleteTransaction(id: string) {
           },
         }),
       },
-    }),
-    prisma.yearHistory.update({
+    });
+
+    await prisma.yearHistory.update({
       where: {
         month_year_userId: {
           userId: user.id,
@@ -69,6 +72,22 @@ export async function DeleteTransaction(id: string) {
           },
         }),
       },
-    }),
-  ]);
+    });
+
+    if (transaction.type === "renda" && transaction.goalId) {
+      await prisma.goal.update({
+        where: {
+          id: transaction.goalId,
+          userId: user.id,
+        },
+        data: {
+          currentAmount: {
+            decrement: transaction.amount,
+          },
+        },
+      });
+    }
+  });
+
+  revalidatePath("/goals");
 }
