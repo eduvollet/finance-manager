@@ -62,6 +62,7 @@ async function getHistoryData(
 type HistoryData = {
   expense: number;
   income: number;
+  goal: number;
   year: number;
   month: number;
   day?: number;
@@ -84,26 +85,48 @@ async function getYearHistoryData(userId: string, year: number) {
     ],
   });
 
-  if (!result || result.length === 0) return [];
+  const goalTransactions = await prisma.transaction.groupBy({
+    by: ["date"],
+    where: {
+      userId,
+      goalId: {
+        not: null,
+      },
+      date: {
+        gte: new Date(year, 0, 1),
+        lte: new Date(year, 11, 31),
+      },
+    },
+    _sum: {
+      amount: true,
+    },
+  });
 
   const history: HistoryData[] = [];
 
   for (let i = 0; i < 12; i++) {
     let expense = 0;
     let income = 0;
+    let goal = 0;
 
     const month = result.find((row) => row.month === i);
-
     if (month) {
       expense = month._sum.expense || 0;
       income = month._sum.income || 0;
     }
+
+    goalTransactions.forEach((t) => {
+      if (t.date.getMonth() === i) {
+        goal += t._sum.amount || 0;
+      }
+    });
 
     history.push({
       year,
       month: i,
       expense,
       income,
+      goal,
     });
   }
 
@@ -133,13 +156,29 @@ async function getMonthHistoryData(
     ],
   });
 
-  if (!result || result.length === 0) return [];
+  const goalTransactions = await prisma.transaction.groupBy({
+    by: ["date"],
+    where: {
+      userId,
+      goalId: {
+        not: null,
+      },
+      date: {
+        gte: new Date(year, month, 1),
+        lte: new Date(year, month + 1, 0),
+      },
+    },
+    _sum: {
+      amount: true,
+    },
+  });
 
   const history: HistoryData[] = [];
   const daysInMonth = getDaysInMonth(new Date(year, month));
   for (let i = 1; i <= daysInMonth; i++) {
     let expense = 0;
     let income = 0;
+    let goal = 0;
 
     const day = result.find((row) => row.day === i);
     if (day) {
@@ -147,9 +186,16 @@ async function getMonthHistoryData(
       income = day._sum.income || 0;
     }
 
+    goalTransactions.forEach((t) => {
+      if (t.date.getDate() === i) {
+        goal += t._sum.amount || 0;
+      }
+    });
+
     history.push({
       expense,
       income,
+      goal,
       year,
       month,
       day: i,

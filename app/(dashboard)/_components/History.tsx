@@ -84,6 +84,14 @@ function History({ userSettings }: { userSettings: UserSettings }) {
                 <div className="h-4 w-4 rounded-full !bg-violet-500"></div>
                 Saldo
               </Badge>
+              <Badge
+                variant={"outline"}
+                className="flex items-center
+                gap-2 text-sm"
+              >
+                <div className="h-4 w-4 rounded-full !bg-yellow-500"></div>
+                Meta
+              </Badge>
             </div>
           </CardTitle>
         </CardHeader>
@@ -104,6 +112,10 @@ function History({ userSettings }: { userSettings: UserSettings }) {
                     <linearGradient id="expenseBar" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="0" stopColor="#ef4444" stopOpacity={1} />
                       <stop offset="1" stopColor="#ef4444" stopOpacity={0} />
+                    </linearGradient>
+                    <linearGradient id="goalBar" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0" stopColor="#f59e0b" stopOpacity={1} />
+                      <stop offset="1" stopColor="#f59e0b" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid
@@ -150,6 +162,13 @@ function History({ userSettings }: { userSettings: UserSettings }) {
                     radius={4}
                     className="cursor-pointer"
                   />
+                  <Bar
+                    dataKey={"goal"}
+                    label={"Meta"}
+                    fill="url(#goalBar)"
+                    radius={4}
+                    className="cursor-pointer"
+                  />
                   <Tooltip
                     cursor={{ opacity: 0.1 }}
                     content={(props) => (
@@ -181,7 +200,7 @@ function CustomTooltip({ active, payload, formatter }: any) {
   if (!active || !payload || payload.length === 0) return null;
 
   const data = payload[0].payload;
-  const { expense, income } = data;
+  const { expense, income, goal } = data;
 
   return (
     <div className="min-w-[300px] rounded border bg-background p-4">
@@ -205,6 +224,13 @@ function CustomTooltip({ active, payload, formatter }: any) {
         value={income - expense}
         bgColor="!bg-violet-500"
         textColor={"!text-violet-500"}
+      />
+      <TooltipRow
+        formatter={formatter}
+        label="Meta"
+        value={goal}
+        bgColor="!bg-yellow-500"
+        textColor={"!text-yellow-500"}
       />
     </div>
   );
