@@ -9,6 +9,7 @@ import { UserButton } from "@clerk/nextjs";
 import { ThemeSwitcherBtn } from "./ThemeSwitcherBtn";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 import { Menu, MenuIcon } from "lucide-react";
+import { ReportDialog } from "@/app/(dashboard)/_components/ReportDialog";
 
 function Navbar() {
   return (
@@ -55,6 +56,17 @@ function MobileNavBar() {
                   clickCallback={() => setIsOpen((prev) => !prev)}
                 />
               ))}
+              <ReportDialog
+                trigger={
+                  <Button
+                    variant={"ghost"}
+                    className="w-full justify-start text-lg text-muted-foreground hover:text-foreground"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Relatórios
+                  </Button>
+                }
+              />
             </div>
           </SheetContent>
         </Sheet>
@@ -88,6 +100,16 @@ function DesktopNavbar() {
               link={item.link}
             />
           ))}
+          <ReportDialog
+            trigger={
+              <Button
+                variant={"ghost"}
+                className="w-full justify-start text-lg text-muted-foreground hover:text-foreground"
+              >
+                Relatórios
+              </Button>
+            }
+          />
         </div>
       </nav>
       <div className="mt-auto flex flex-col items-center gap-y-4 px-4 py-8">
