@@ -34,3 +34,17 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Instalação
+
+- Pegue e intale o arquivo no github
+
+- rode o comando "npm i -f"
+
+- rode o comando "npx prisma generate"
+
+- crie um arquivo na pasta principal ".env.local"
+
+- coloque dentro do arquivo o código: "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_aGVscGZ1bC1saXphcmQtNjQuY2xlcmsuYWNjb3VudHMuZGV2JA
+CLERK_SECRET_KEY=sk_test_O1vm8AewJksjRO1CiFsTaKZUJNYuwC8AEzNJOBD6t5"
+
